@@ -1,5 +1,6 @@
 import numpy as np
 
+# We can also do longest path just by changing edge values to negative and perform Shortest path
 # Graph must be directed acyclic graph
 # Graph is represented as Edge list. Here
 Edges = np.array([('A','B',3),('A','C',6),('B','C',4),('B','D',4),('B','E',11),
@@ -19,7 +20,8 @@ visited_nodes = np.array([False for i in range(0, Length)])
 
 # Solution array of array of topological sorted nodes.
 Topo_Sort = []
-Dist = np.array([None for i in range(0, Length)])
+LongestDist = np.array([None for i in range(0, Length)])
+ShortestDist = np.array([None for i in range(0, Length)])
 
 
 # Stack For both Nodes and Edges
@@ -139,10 +141,7 @@ def Topological_Sort():
         Topological_Sort()
 
 
-Topological_Sort()
-print(Topo_Sort)
-
-
+# Returns all the edges relating to a particular node.
 def getEdges(node):
     j = 0
     edges = []
@@ -153,24 +152,51 @@ def getEdges(node):
     return edges
 
 
+# Shortest Path Solution starts here.
 def ShortestPath():
     i = 0
-    Dist[i] = 0
+    ShortestDist[i] = 0
     while i < Length:
         allEdgesOfNode = getEdges(Topo_Sort[i])
         for item in allEdgesOfNode:
             ind_node = Topo_Sort.index(item[1])
-            if Dist[ind_node] is None:
-                Dist[ind_node] = Dist[i] + int(item[2])
-                print(Dist[ind_node])
+            if ShortestDist[ind_node] is None:
+                ShortestDist[ind_node] = ShortestDist[i] + int(item[2])
+                print(ShortestDist[ind_node])
             else:
-                check_dist = Dist[i] + int(item[2])
-                if check_dist < Dist[ind_node]:
-                    Dist[ind_node] = check_dist
+                check_dist = ShortestDist[i] + int(item[2])
+                if check_dist < ShortestDist[ind_node]:
+                    ShortestDist[ind_node] = check_dist
         i += 1
         print('....................................')
 
 
-ShortestPath()
+# Longest Path Solution starts here.
+def LongestPath():
+    i = 0
+    LongestDist[i] = 0
+    while i < Length:
+        allEdgesOfNode = getEdges(Topo_Sort[i])
+        for item in allEdgesOfNode:
+            ind_node = Topo_Sort.index(item[1])
+            if LongestDist[ind_node] is None:
+                LongestDist[ind_node] = LongestDist[i] - int(item[2])
+                print(LongestDist[ind_node])
+            else:
+                check_dist = LongestDist[i] - int(item[2])
+                if check_dist < LongestDist[ind_node]:
+                    LongestDist[ind_node] = check_dist
+        i += 1
+        print('....................................')
+    i = 0
+    while i < Length:
+        LongestDist[i] = -LongestDist[i]
+        i += 1
 
-print(Dist)
+
+Topological_Sort()
+LongestPath()
+ShortestPath()
+print('Topological Sortes array', Topo_Sort)
+print('Shortest distance to each nodes', ShortestDist)
+print('Longest distance to each nodes', LongestDist)
