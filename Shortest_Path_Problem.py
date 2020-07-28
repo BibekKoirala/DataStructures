@@ -2,12 +2,12 @@ import numpy as np
 
 # Graph must be directed acyclic graph
 # Graph is represented as Edge list. Here
-Edges = np.array([('A', 'D'), ('B', 'D'), ('C', 'A'), ('C', 'B'), ('D', 'G'), ('D', 'H'),
-                  ('E', 'A'), ('E', 'D'), ('E', 'F'), ('F', 'K'), ('F', 'J'), ('G', 'I'),
-                  ('H', 'I'), ('H', 'J'), ('I', 'L'), ('J', 'L'), ('J', 'M'), ('K', 'J')])
+Edges = np.array([('A','B',3),('A','C',6),('B','C',4),('B','D',4),('B','E',11),
+                  ('C','D',8),('C','G',11),('D','E',-4),('D','F',5),('D','G',2),
+                  ('E','H',9),('F','H',1),('G','H',2)])
 
 # Nodes of the graph can be represented as a simple list
-Nodes = np.array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'])
+Nodes = np.array(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
 
 # Length of the traversal or total number of edges.
 Length = len(Nodes)
@@ -19,6 +19,7 @@ visited_nodes = np.array([False for i in range(0, Length)])
 
 # Solution array of array of topological sorted nodes.
 Topo_Sort = []
+Dist = np.array([None for i in range(0, Length)])
 
 
 # Stack For both Nodes and Edges
@@ -85,7 +86,6 @@ def selectEdge(node):
         return None
 
 
-Node_Stack = Stack()
 Edge_Stack = Stack()
 
 
@@ -115,7 +115,7 @@ def Topological_Sort():
             i += 1
         edge = selectEdge(rand_node)
         if edge is None:
-            Node_Stack.push(Node(rand_node))
+            Topo_Sort.insert(0,rand_node)
         else:
             Edge_Stack.push(Node(edge))
             while Edge_Stack.head is not None:
@@ -124,13 +124,13 @@ def Topological_Sort():
                     trav = trav.next
                 next_edge = selectEdge(trav.val[1])
                 if next_edge is None:
-                    Node_Stack.push(Node(trav.val[1]))
+                    Topo_Sort.insert(0, trav.val[1])
                     for_head = trav.val
                     Edge_Stack.pop()
                     if Edge_Stack.head is None:
                         edge_for_head = selectEdge(for_head[0])
                         if edge_for_head is None:
-                            Node_Stack.push(Node(for_head[0]))
+                            Topo_Sort.insert(0, for_head[0])
                         else:
                             Edge_Stack.push(Node(edge_for_head))
                 else:
@@ -140,4 +140,37 @@ def Topological_Sort():
 
 
 Topological_Sort()
-Node_Stack.printStack()
+print(Topo_Sort)
+
+
+def getEdges(node):
+    j = 0
+    edges = []
+    while j < Edges_Length:
+        if Edges[j][0] == node:
+            edges.append(Edges[j])
+        j += 1
+    return edges
+
+
+def ShortestPath():
+    i = 0
+    Dist[i] = 0
+    while i < Length:
+        allEdgesOfNode = getEdges(Topo_Sort[i])
+        for item in allEdgesOfNode:
+            ind_node = Topo_Sort.index(item[1])
+            if Dist[ind_node] is None:
+                Dist[ind_node] = Dist[i] + int(item[2])
+                print(Dist[ind_node])
+            else:
+                check_dist = Dist[i] + int(item[2])
+                if check_dist < Dist[ind_node]:
+                    Dist[ind_node] = check_dist
+        i += 1
+        print('....................................')
+
+
+ShortestPath()
+
+print(Dist)
