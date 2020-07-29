@@ -7,6 +7,7 @@ Edges_Len = len(Edges)
 Dist = np.array([None for i in range(0, Node_Len)])
 Dist[0] = 0
 Start = 0
+prev = np.array([None for i in range(0, Node_Len)])
 
 
 class Node:
@@ -30,7 +31,7 @@ class PriorityQueue:
                 self.head = node
                 self.head.next = trav
             else:
-                while trav.next is not None and trav.next.dist < node.dist :
+                while trav.next is not None and trav.next.dist < node.dist:
                     trav = trav.next
                 self.printQueue()
                 node.next = trav.next
@@ -79,19 +80,21 @@ def Lazy_Dijkstra_SPA():
         current_dist = NodeQueue.head.dist
         allEdges = getEdges(current_node)
         dist_of_current = Dist[np.where(Nodes == current_node)][0]
-
-        for edge in allEdges:
-            new_dist = dist_of_current + edge[2]
-            if Dist[np.where(Nodes == edge[1])][0] is None:
-                NodeQueue.push(Node(edge[1], new_dist))
-                Dist[np.where(Nodes == edge[1])] = new_dist
-            elif new_dist < Dist[np.where(Nodes == edge[1])][0]:
-                NodeQueue.push(Node(edge[1], new_dist))
-                Dist[np.where(Nodes == edge[1])] = new_dist
-
+        if dist_of_current is not None or current_dist < dist_of_current:
+            for edge in allEdges:
+                new_dist = dist_of_current + edge[2]
+                if Dist[np.where(Nodes == edge[1])][0] is None:
+                    NodeQueue.push(Node(edge[1], new_dist))
+                    Dist[np.where(Nodes == edge[1])] = new_dist
+                elif new_dist < Dist[np.where(Nodes == edge[1])][0]:
+                    NodeQueue.push(Node(edge[1], new_dist))
+                    Dist[np.where(Nodes == edge[1])] = new_dist
+                prev[np.where(Nodes == edge[1])] = edge[0]
         NodeQueue.pop()
 
 
 Lazy_Dijkstra_SPA()
-print(Dist)
+print('Shortest distance from 0', Dist)
+print('For Path', prev)
 NodeQueue.printQueue()
+
