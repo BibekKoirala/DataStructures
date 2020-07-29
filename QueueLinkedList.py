@@ -21,9 +21,9 @@ class Queue:
         if self.head is None:
             print("No Items to delete")
         elif self.head.next is None:
-            self.head.next=value
+            self.head=None
         else:
-            self.head=self.head.next
+            self.head = self.head.next
 
     def printQueue(self):
         printval=self.head
